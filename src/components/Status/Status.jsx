@@ -1,6 +1,6 @@
 
 import React from 'react';
-import styles from './Status.css';
+import styles from './Status.module.css';
 
 
 

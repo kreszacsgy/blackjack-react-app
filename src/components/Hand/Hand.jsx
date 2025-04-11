@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import styles from './Hand.css';
+import styles from './Hand.module.css';
 
 
 
 
-const Hand = ({title,deckId}) => {
+const Hand = ({title,deckId,onScoreUpdate}) => {
     const [cards ,setCards]=useState([]);
 
     
@@ -15,31 +15,30 @@ const Hand = ({title,deckId}) => {
     
     const drawCard=(event)=>{
         event.preventDefault();
-        fetch (`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
-            .then((response) => response.json())
-            .then((data) => {setCards(data.cards)}
-        )
-        
+        const count = cards.length === 0 ? 2 : 1;
+       
+            fetch (`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${count}`)
+                .then((response) => response.json())
+                .then((data) => {setCards(prevCards => [...prevCards, ...data.cards])}
+            );
     }
+        
+    
 
     useEffect(() => {
        
         if (cards.length > 0) {
-            console.log("Pontszám számítása elindult...");
             const newScore = calculate(cards);
-            console.log("Új pontszám:", newScore);
             setScore(newScore);
-
+            onScoreUpdate(newScore);
         }
-    }, [cards]);
+    }, [cards,onScoreUpdate]);
 
     const calculate = (cards) => {
         
-        console.log("Számolás előtt cards:", cards);
         let total = 0;
         let aceCount = 0;
         cards.forEach((card) => {
-            console.log("Aktuális kártya:", card.value);
           if (card.value === 'KING' || card.value === 'QUEEN' || card.value === 'JACK') {
             total+=10
           }else if (card.value === "ACE") {
@@ -68,7 +67,6 @@ const Hand = ({title,deckId}) => {
 
         }
         
-        console.log("Kiszámolt pontszám:", total);
         return total;
       }
     
