@@ -4,16 +4,12 @@ import styles from './Hand.module.css';
 
 
 
-const Hand = ({title,deckId,onScoreUpdate}) => {
-    const [cards ,setCards]=useState([]);
+const Hand = ({title,cards,score}) => {
+    
+     
 
     
-    const [score, setScore] = useState(0);
-  
-  
-
-    
-    const drawCard=(event)=>{
+    /*const drawCard=(event)=>{
         event.preventDefault();
         const count = cards.length === 0 ? 2 : 1;
        
@@ -68,22 +64,26 @@ const Hand = ({title,deckId,onScoreUpdate}) => {
         }
         
         return total;
-      }
+      }*/
     
    
 
 
-    const renderCards=()=>{
+    const renderCards=(cards)=>{
+        if (!cards) {
+            return null; 
+        }
         return cards.map(card=><img src={card.image} alt={card.code} key={card.code}/>)
     }
-   
+    useEffect(() => {
+        console.log("Received cards in Hand:", cards);
+      }, [cards]);
   
 
     return (
         <div className={styles.handContainer}>
              {cards.length > 0 && <h1 className={styles.title}>{title} - {score} point</h1>}
-            <div className={styles.cardContainer}>{renderCards()}</div>
-            <button onClick={drawCard}>Draw</button>
+            <div className={styles.cardContainer}>{renderCards(cards)}</div>
         
         </div>
     );

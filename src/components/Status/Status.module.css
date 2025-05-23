@@ -9,7 +9,7 @@
     justify-content: center;
     margin: 0.5em 0.5em 0.5em 1em;
     padding: 1em;
-    width: 60%;
+    width: 80%;
     background: black;
     border: 5px solid white;
     border-radius: 15px;
@@ -32,6 +32,7 @@
   .value {
     color: white;
     text-align: center;
+    font-size: 200%
   }
   
   @media screen and (max-width: 992px) {
