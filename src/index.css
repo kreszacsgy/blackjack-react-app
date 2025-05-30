@@ -6,6 +6,8 @@
 
 body {
   background: rgb(0, 78, 0);
+  background: radial-gradient(circle, rgb(0, 150, 0), rgb(0, 47, 0));
+  height:100vh;
   margin: 0;
   display:flex;
   justify-content: center;

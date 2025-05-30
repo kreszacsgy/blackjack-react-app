@@ -8,6 +8,7 @@ import Hand from './components/Hand/Hand';
 import { useEffect, useState } from 'react';
 
 function App() {
+  
   const [deckId ,setDeckId]=useState(null);
 
   const [dealerCards ,setDealerCards]=useState([]);
@@ -18,7 +19,66 @@ function App() {
 
   const [message, setMessage] = useState('');
 
- 
+  const [buttonState, setButtonState] = useState({
+    hitDisabled: false,
+    standDisabled: false,
+    resetDisabled: true
+  });
+
+  const [gameState, setGameState] = useState({
+    isDealerTurn: false,
+    isPlayerTurn: true,
+    isGameOver:false
+  });
+
+  useEffect(() => {
+    if (deckId) {
+      drawCard([]).then((dealerNewCards) => {
+        setDealerCards(dealerNewCards);
+        setDealerScore(calculateScore(dealerNewCards));
+      });
+
+      drawCard([]).then((playerNewCards) => {
+        setPlayerCards(playerNewCards);
+        setPlayerScore(calculateScore(playerNewCards));
+      });
+    }setMessage("Hit or Stand?")
+  }, [deckId]);
+
+  useEffect(() => {
+    if (playerScore > 21 ) {
+      checkWin();
+      setGameState({
+          isDealerTurn: false,
+          isPlayerTurn: false,
+          isGameOver:true
+      });
+      buttonState.hitDisabled = true;
+      buttonState.standDisabled = true;
+      buttonState.resetDisabled = false;
+      setButtonState({ ...buttonState });
+      
+    }
+  }, [playerScore])
+
+   useEffect(() => {
+    if (gameState.isGameOver && gameState.isDealerTurn){ 
+      if(dealerScore > 17 ) {
+      checkWin();
+      buttonState.hitDisabled = true;
+      buttonState.standDisabled = true;
+      buttonState.resetDisabled = false;
+      setButtonState({ ...buttonState });
+      
+    }  else if(dealerScore <= 17){
+      drawCard(dealerCards).then((dealerNewCards) => {
+        setDealerCards(dealerNewCards);
+        setDealerScore(calculateScore(dealerNewCards));
+        })
+    }}
+  }, [dealerScore,gameState.isGameOver])
+
+//Starting New Game: shuffle card and get deck id
 
   const newGame=(event)=>{
     event.preventDefault();
@@ -31,13 +91,22 @@ function App() {
         setDealerScore(0);
         setPlayerScore(0);
         setMessage('');
-        console.log("New game with deck ID:", data.deck_id);
+        setGameState({
+          isDealerTurn: false,
+          isPlayerTurn: true,
+          isGameOver:false
+        });
+        setButtonState({
+          hitDisabled: false,
+          standDisabled: false,
+          resetDisabled: true
+        });
       });
   };
 
+  //Draw card function: if the table is empty-draw 2 card, else draw 1 card
 
-  const drawCard=(cards)=>{
-    
+  const drawCard=(cards)=>{    
     const count = cards.length === 0 ? 2 : 1;
     return fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${count}`)
       .then((response) => response.json())
@@ -45,7 +114,9 @@ function App() {
         console.log("Cards drawn:", data.cards);
         return [...cards, ...data.cards];
       });
-    }
+  };
+
+  //Calculate scores
 
   const calculateScore = (cards) => {
     let total = 0;
@@ -68,50 +139,59 @@ function App() {
     return total;
   };
 
+  //Reset Game: the deck is the same, only draw new cards
+
   const resetGame=() =>{
     setPlayerCards([]);
     setDealerCards([]);
     setDealerScore(0);
     setPlayerScore(0);
-    setMessage('');
+    setMessage('Hit or Stand?');
+    setGameState({
+      isDealerTurn: false,
+      isPlayerTurn: true,
+      isGameOver:false
+    });
+    setButtonState({
+      hitDisabled: false,
+      standDisabled: false,
+      resetDisabled: true
+    });
     drawCard([]).then((dealerNewCards) => {
-        setDealerCards(dealerNewCards);
-        setDealerScore(calculateScore(dealerNewCards));
-      });
-
-      drawCard([]).then((playerNewCards) => {
-        setPlayerCards(playerNewCards);
-        setPlayerScore(calculateScore(playerNewCards));
-      });
-  }
-
-  const hitPlayer = () => {
-    drawCard(playerCards).then((newCards) => {
-      setPlayerCards(newCards);
-      setPlayerScore(calculateScore(newCards));
+      setDealerCards(dealerNewCards);
+      setDealerScore(calculateScore(dealerNewCards));
+    });
+    drawCard([]).then((playerNewCards) => {
+      setPlayerCards(playerNewCards);
+      setPlayerScore(calculateScore(playerNewCards));
     });
   };
 
-  const stand = () => {
-    let currentCards = [...dealerCards];
-    let score = calculateScore(currentCards);
+  //Player hits
 
-    const drawUntil17 = () => {
-      if (score < 17) {
-        drawCard(currentCards).then((newCards) => {
-          currentCards = newCards;
-          score = calculateScore(currentCards);
-          drawUntil17(); 
-        });
-      } else {
-        setDealerCards(currentCards);
-        setDealerScore(score);
-      }
-    };
-
-    drawUntil17();
+  const hitPlayer = () => {
+    drawCard(playerCards).then((newCards) => {
+    const newScore = calculateScore(newCards);
+    setPlayerCards(newCards);
+    setPlayerScore(newScore);
+    });    
   };
 
+  //Player stands
+
+  const stand=()=>{
+    setGameState({
+      isDealerTurn: true,
+      isPlayerTurn: false,
+      isGameOver:true
+    });
+    buttonState.hitDisabled = true;
+    buttonState.standDisabled = true;
+    buttonState.resetDisabled = false;
+    setButtonState({ ...buttonState });
+  };
+
+ //Check the winner
 
   const checkWin = () => {
     if (playerScore > 21) {
@@ -128,39 +208,19 @@ function App() {
       setMessage("Dealer wins!");
     } else {
       setMessage("It's a tie!");
-    }
-  }
-
+    }    
+  };
   
- 
-  useEffect(() => {
-    if (deckId) {
-      drawCard([]).then((dealerNewCards) => {
-        setDealerCards(dealerNewCards);
-        setDealerScore(calculateScore(dealerNewCards));
-      });
 
-      drawCard([]).then((playerNewCards) => {
-        setPlayerCards(playerNewCards);
-        setPlayerScore(calculateScore(playerNewCards));
-      });
-    }
-  }, [deckId]);
-
-  useEffect(() => {
-    if (dealerScore > 0 || playerScore > 0) {
-      checkWin();
-    }
-  }, [dealerScore, playerScore]);
 
   return (
     <>
       <h1>BlackJack</h1>
-      <Status message={message}/>
-      <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame}/>
+      <Status message={message}/>      
       <button onClick={newGame}>New Game</button>
       <Hand  title={"Dealer's Hand"}  cards={dealerCards} score={dealerScore}/>
       <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore}/>
+      <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame} buttonState={buttonState}/>
     </>
   );
 }
