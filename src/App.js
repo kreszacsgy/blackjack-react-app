@@ -1,6 +1,3 @@
-
-
-
 import './App.css';
 import Status from './components/Status/Status';
 import Controls from './components/Controls/Controls';
@@ -19,6 +16,10 @@ function App() {
 
   const [message, setMessage] = useState('');
 
+  const [isDealerCardRevealed, setIsDealerCardRevealed] = useState(false);
+
+  const [balance, setBalance] = useState(100);
+
   const [buttonState, setButtonState] = useState({
     hitDisabled: false,
     standDisabled: false,
@@ -28,25 +29,26 @@ function App() {
   const [gameState, setGameState] = useState({
     isDealerTurn: false,
     isPlayerTurn: true,
-    isGameOver:false
+    isGameOver: false
   });
 
   useEffect(() => {
     if (deckId) {
       drawCard([]).then((dealerNewCards) => {
         setDealerCards(dealerNewCards);
-        setDealerScore(calculateScore(dealerNewCards));
+        setDealerScore(calculateScore([dealerNewCards[1]]));
       });
 
       drawCard([]).then((playerNewCards) => {
         setPlayerCards(playerNewCards);
         setPlayerScore(calculateScore(playerNewCards));
       });
-    }setMessage("Hit or Stand?")
+    }setMessage("Hit or Stand?");
+    setIsDealerCardRevealed(false);
   }, [deckId]);
 
   useEffect(() => {
-    if (playerScore > 21 ) {
+    if (playerScore >= 21 ) {
       checkWin();
       setGameState({
           isDealerTurn: false,
@@ -70,15 +72,15 @@ function App() {
       buttonState.resetDisabled = false;
       setButtonState({ ...buttonState });
       
-    }  else if(dealerScore <= 17){
+    } else if(dealerScore <= 17){
       drawCard(dealerCards).then((dealerNewCards) => {
         setDealerCards(dealerNewCards);
         setDealerScore(calculateScore(dealerNewCards));
-        })
-    }}
+        });
+    } };
   }, [dealerScore,gameState.isGameOver])
 
-//Starting New Game: shuffle card and get deck id
+//Starting New Game: shuffle cards and get deck id
 
   const newGame=(event)=>{
     event.preventDefault();
@@ -159,12 +161,13 @@ function App() {
     });
     drawCard([]).then((dealerNewCards) => {
       setDealerCards(dealerNewCards);
-      setDealerScore(calculateScore(dealerNewCards));
+      setDealerScore(calculateScore([dealerNewCards[1]]));
     });
     drawCard([]).then((playerNewCards) => {
       setPlayerCards(playerNewCards);
       setPlayerScore(calculateScore(playerNewCards));
     });
+    setIsDealerCardRevealed(false);
   };
 
   //Player hits
@@ -180,6 +183,7 @@ function App() {
   //Player stands
 
   const stand=()=>{
+    setIsDealerCardRevealed(true);
     setGameState({
       isDealerTurn: true,
       isPlayerTurn: false,
@@ -189,6 +193,8 @@ function App() {
     buttonState.standDisabled = true;
     buttonState.resetDisabled = false;
     setButtonState({ ...buttonState });
+    const fullDealerScore = calculateScore(dealerCards);
+  setDealerScore(fullDealerScore);
   };
 
  //Check the winner
@@ -216,10 +222,10 @@ function App() {
   return (
     <>
       <h1>BlackJack</h1>
-      <Status message={message}/>      
+      <Status message={message} balance={balance}/>      
       <button onClick={newGame}>New Game</button>
-      <Hand  title={"Dealer's Hand"}  cards={dealerCards} score={dealerScore}/>
-      <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore}/>
+      <Hand  title={"Dealer's Hand"}  cards={dealerCards} score={dealerScore} isRevealed={isDealerCardRevealed}/>
+      <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore} />
       <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame} buttonState={buttonState}/>
     </>
   );
