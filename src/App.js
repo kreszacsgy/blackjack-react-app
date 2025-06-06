@@ -4,6 +4,14 @@ import Controls from './components/Controls/Controls';
 import Hand from './components/Hand/Hand';
 import { useEffect, useState } from 'react';
 
+const GameState = {
+  INIT: 'init',
+  BET: 'bet',
+  PLAYER_TURN: 'playerTurn',
+  DEALER_TURN: 'dealerTurn',
+  GAME_OVER: 'gameOver'
+};
+
 function App() {
   
   const [deckId ,setDeckId]=useState(null);
@@ -14,11 +22,12 @@ function App() {
   const [dealerScore, setDealerScore] = useState(0);
   const [playerScore, setPlayerScore] = useState(0);
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState('Start a New Game!');
 
   const [isDealerCardRevealed, setIsDealerCardRevealed] = useState(false);
 
   const [balance, setBalance] = useState(100);
+  const [bet, setBet] = useState(0);
 
   const [buttonState, setButtonState] = useState({
     hitDisabled: false,
@@ -26,14 +35,12 @@ function App() {
     resetDisabled: true
   });
 
-  const [gameState, setGameState] = useState({
-    isDealerTurn: false,
-    isPlayerTurn: true,
-    isGameOver: false
-  });
+  const [gameState, setGameState] = useState(GameState.INIT);
+
+
 
   useEffect(() => {
-    if (deckId) {
+    if (deckId && gameState === GameState.PLAYER_TURN) {
       drawCard([]).then((dealerNewCards) => {
         setDealerCards(dealerNewCards);
         setDealerScore(calculateScore([dealerNewCards[1]]));
@@ -43,42 +50,40 @@ function App() {
         setPlayerCards(playerNewCards);
         setPlayerScore(calculateScore(playerNewCards));
       });
-    }setMessage("Hit or Stand?");
+      setMessage("Hit or Stand?");
+    }
     setIsDealerCardRevealed(false);
-  }, [deckId]);
+  }, [deckId,gameState]);
 
   useEffect(() => {
-    if (playerScore >= 21 ) {
+    if (playerScore >= 21 && gameState === GameState.PLAYER_TURN ) {
       checkWin();
-      setGameState({
-          isDealerTurn: false,
-          isPlayerTurn: false,
-          isGameOver:true
-      });
-      buttonState.hitDisabled = true;
-      buttonState.standDisabled = true;
-      buttonState.resetDisabled = false;
-      setButtonState({ ...buttonState });
-      
+      setGameState(GameState.GAME_OVER);
+      setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });      
     }
   }, [playerScore])
 
    useEffect(() => {
-    if (gameState.isGameOver && gameState.isDealerTurn){ 
-      if(dealerScore > 17 ) {
+    if (gameState === GameState.DEALER_TURN){ 
+      if(dealerScore >= 17 ) {
       checkWin();
-      buttonState.hitDisabled = true;
-      buttonState.standDisabled = true;
-      buttonState.resetDisabled = false;
-      setButtonState({ ...buttonState });
+      setGameState(GameState.GAME_OVER);
+      setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });
       
-    } else if(dealerScore <= 17){
+    } else {
       drawCard(dealerCards).then((dealerNewCards) => {
         setDealerCards(dealerNewCards);
         setDealerScore(calculateScore(dealerNewCards));
         });
     } };
-  }, [dealerScore,gameState.isGameOver])
+  }, [dealerScore,gameState])
+
+   const placeBet = (amount) => {
+    setBet(amount);
+    setBalance(Math.round((balance - amount) * 100) / 100);
+    setGameState(GameState.PLAYER_TURN);
+    setButtonState({ hitDisabled: false, standDisabled: false, resetDisabled: true });
+  }
 
 //Starting New Game: shuffle cards and get deck id
 
@@ -92,17 +97,9 @@ function App() {
         setPlayerCards([]);
         setDealerScore(0);
         setPlayerScore(0);
-        setMessage('');
-        setGameState({
-          isDealerTurn: false,
-          isPlayerTurn: true,
-          isGameOver:false
-        });
-        setButtonState({
-          hitDisabled: false,
-          standDisabled: false,
-          resetDisabled: true
-        });
+        setMessage('Place your bet!');
+        setGameState(GameState.BET);
+        setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: true });
       });
   };
 
@@ -148,17 +145,9 @@ function App() {
     setDealerCards([]);
     setDealerScore(0);
     setPlayerScore(0);
-    setMessage('Hit or Stand?');
-    setGameState({
-      isDealerTurn: false,
-      isPlayerTurn: true,
-      isGameOver:false
-    });
-    setButtonState({
-      hitDisabled: false,
-      standDisabled: false,
-      resetDisabled: true
-    });
+    setMessage('Place your bet!');
+    setGameState(GameState.BET);
+    setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: true });
     drawCard([]).then((dealerNewCards) => {
       setDealerCards(dealerNewCards);
       setDealerScore(calculateScore([dealerNewCards[1]]));
@@ -184,17 +173,10 @@ function App() {
 
   const stand=()=>{
     setIsDealerCardRevealed(true);
-    setGameState({
-      isDealerTurn: true,
-      isPlayerTurn: false,
-      isGameOver:true
-    });
-    buttonState.hitDisabled = true;
-    buttonState.standDisabled = true;
-    buttonState.resetDisabled = false;
-    setButtonState({ ...buttonState });
+    setGameState(GameState.DEALER_TURN);
+    setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });
     const fullDealerScore = calculateScore(dealerCards);
-  setDealerScore(fullDealerScore);
+    setDealerScore(fullDealerScore);
   };
 
  //Check the winner
@@ -204,16 +186,20 @@ function App() {
       setMessage("Dealer wins! (Player bust)");
     } else if (dealerScore > 21) {
       setMessage("Player wins! (Dealer bust)");
+      setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
     } else if (playerScore === 21 && dealerScore !== 21) {
       setMessage("Blackjack! Player wins!");
+      setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
     } else if (dealerScore === 21 && playerScore !== 21) {
       setMessage("Blackjack! Dealer wins!");
     } else if (playerScore > dealerScore) {
       setMessage("Player wins!");
+      setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
     } else if (dealerScore > playerScore) {
       setMessage("Dealer wins!");
     } else {
       setMessage("It's a tie!");
+      setBalance(Math.round((balance + (bet * 1)) * 100) / 100);
     }    
   };
   
@@ -221,12 +207,12 @@ function App() {
 
   return (
     <>
-      <h1>BlackJack</h1>
-      <Status message={message} balance={balance}/>      
+           
       <button onClick={newGame}>New Game</button>
       <Hand  title={"Dealer's Hand"}  cards={dealerCards} score={dealerScore} isRevealed={isDealerCardRevealed}/>
+      <Status message={message} balance={balance}/> 
       <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore} />
-      <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame} buttonState={buttonState}/>
+      <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame} buttonState={buttonState}  gameState={gameState} balance={balance} betEvent={placeBet}/>
     </>
   );
 }
