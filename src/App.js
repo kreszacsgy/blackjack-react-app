@@ -37,8 +37,6 @@ function App() {
 
   const [gameState, setGameState] = useState(GameState.INIT);
 
-
-
   useEffect(() => {
     if (deckId && gameState === GameState.PLAYER_TURN) {
       drawCard([]).then((dealerNewCards) => {
@@ -52,7 +50,7 @@ function App() {
       });
       setMessage("Hit or Stand?");
     }
-    setIsDealerCardRevealed(false);
+    
   }, [deckId,gameState]);
 
   useEffect(() => {
@@ -61,22 +59,31 @@ function App() {
       setGameState(GameState.GAME_OVER);
       setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });      
     }
-  }, [playerScore])
+  }, [playerScore]);
 
    useEffect(() => {
     if (gameState === GameState.DEALER_TURN){ 
+      setIsDealerCardRevealed(true);
       if(dealerScore >= 17 ) {
-      checkWin();
-      setGameState(GameState.GAME_OVER);
-      setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });
+        checkWin();
+        setGameState(GameState.GAME_OVER);
+        setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });
       
     } else {
-      drawCard(dealerCards).then((dealerNewCards) => {
-        setDealerCards(dealerNewCards);
-        setDealerScore(calculateScore(dealerNewCards));
+        drawCard(dealerCards).then((dealerNewCards) => {
+          setDealerCards(dealerNewCards);
+          setDealerScore(calculateScore(dealerNewCards));
         });
     } };
-  }, [dealerScore,gameState])
+  }, [dealerScore,gameState]);
+
+  useEffect(() => {
+    if (balance <= 0 && gameState===GameState.GAME_OVER) {
+      setGameState(GameState.INIT);
+      setMessage("Empty Wallet! Play Again?");
+    }
+  }, [balance,gameState]);
+
 
    const placeBet = (amount) => {
     setBet(amount);
@@ -87,8 +94,7 @@ function App() {
 
 //Starting New Game: shuffle cards and get deck id
 
-  const newGame=(event)=>{
-    event.preventDefault();
+  const newGame=()=>{
     fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
       .then((response) => response.json())
       .then((data) => {
@@ -98,9 +104,13 @@ function App() {
         setDealerScore(0);
         setPlayerScore(0);
         setMessage('Place your bet!');
+        setIsDealerCardRevealed(false);
+        if (balance <= 0) {
+          setBalance(100); 
+        }
         setGameState(GameState.BET);
-        setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: true });
       });
+      console.log(gameState);
   };
 
   //Draw card function: if the table is empty-draw 2 card, else draw 1 card
@@ -110,7 +120,6 @@ function App() {
     return fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${count}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Cards drawn:", data.cards);
         return [...cards, ...data.cards];
       });
   };
@@ -138,26 +147,6 @@ function App() {
     return total;
   };
 
-  //Reset Game: the deck is the same, only draw new cards
-
-  const resetGame=() =>{
-    setPlayerCards([]);
-    setDealerCards([]);
-    setDealerScore(0);
-    setPlayerScore(0);
-    setMessage('Place your bet!');
-    setGameState(GameState.BET);
-    setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: true });
-    drawCard([]).then((dealerNewCards) => {
-      setDealerCards(dealerNewCards);
-      setDealerScore(calculateScore([dealerNewCards[1]]));
-    });
-    drawCard([]).then((playerNewCards) => {
-      setPlayerCards(playerNewCards);
-      setPlayerScore(calculateScore(playerNewCards));
-    });
-    setIsDealerCardRevealed(false);
-  };
 
   //Player hits
 
@@ -171,12 +160,12 @@ function App() {
 
   //Player stands
 
-  const stand=()=>{
-    setIsDealerCardRevealed(true);
+  const stand=()=>{    
     setGameState(GameState.DEALER_TURN);
     setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });
     const fullDealerScore = calculateScore(dealerCards);
     setDealerScore(fullDealerScore);
+    setIsDealerCardRevealed(true);
   };
 
  //Check the winner
@@ -206,13 +195,25 @@ function App() {
 
 
   return (
-    <>
-           
-      <button onClick={newGame}>New Game</button>
-      <Hand  title={"Dealer's Hand"}  cards={dealerCards} score={dealerScore} isRevealed={isDealerCardRevealed}/>
+    <>         
+      <Hand  
+        title={"Dealer's Hand"}  
+        cards={dealerCards} 
+        score={dealerScore} 
+        isRevealed={isDealerCardRevealed}
+      />
       <Status message={message} balance={balance}/> 
       <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore} />
-      <Controls onHit={hitPlayer} onStand={stand} onReset={resetGame} buttonState={buttonState}  gameState={gameState} balance={balance} betEvent={placeBet}/>
+      <Controls 
+        onStart={newGame}
+        onHit={hitPlayer} 
+        onStand={stand} 
+        onReset={newGame} 
+        buttonState={buttonState}  
+        gameState={gameState} 
+        balance={balance} 
+        betEvent={placeBet}
+      />
     </>
   );
 }

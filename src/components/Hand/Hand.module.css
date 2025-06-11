@@ -1,38 +1,91 @@
 .handContainer {
-    color: white;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin: 0.5em;
-  }
+  color: white;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0.5rem;
+}
   
-  .cardContainer {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .title {
-    text-align: center;
-    font-size: 200%;
-  }
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
-  img {
-  width: 120px;
+.card {
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: slideIn 1s ease-out forwards;
   margin: 10px;
+}
+
+
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+  
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  text-shadow: 0 0 5px #000;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+img {
+  width: 120px;
   border-radius: 5px;
   box-shadow: 0px 1px 10px rgb(0, 0, 0);
   cursor: default;
-  }
-  
-  
-  @media screen and (max-width: 600px) {
-    .title {
-      font-size: 150%;
-    }
+}
 
-    img{
-      width: 100px;
-    }
+.flipCard {
+  perspective: 1000px;
+  width: 120px;
+  height: 175px;
+  margin: 10px;
+}
+
+.flipCardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s ease;
+  transform-style: preserve-3d;
+  
+}
+
+.revealed .flipCardInner {
+  transform: rotateY(180deg);
+}
+
+.flipCardFront, .flipCardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 5px;
+  box-shadow: 0px 1px 10px rgb(0, 0, 0);
+}
+
+.flipCardFront img, .flipCardBack img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.flipCardBack {
+  transform: rotateY(180deg);
+}
+  
+@media screen and (max-width: 600px) {
+  .title {
+    font-size: 150%;
   }
+}
 

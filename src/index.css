@@ -5,22 +5,14 @@
 }
 
 body {
-  background-image: url('/public/blackjack.png');
-  background-size: cover;       
+  background: url('/public/blackjack-text.png'), url('/public/blackjack1.png');
+  background-size: 600px,cover;       
   background-repeat: no-repeat; 
-  background-position: center; 
-  /*background: rgb(0, 78, 0);
-  background: radial-gradient(circle, rgb(0, 150, 0), rgb(0, 47, 0));*/
+  background-position: 50% 30%, center; 
   height:100vh;
   margin: 0;
   display:flex;
-  justify-content: center;
-  font-family: 'Lexend Exa', sans-serif;
-  
+  justify-content:center;
+  font-family: 'Cinzel', sans-serif;    
 }
 
-h1 {
-  text-align: center;
-  font-size: 50px;
-  color:white
-}

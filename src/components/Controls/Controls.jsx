@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Controls.module.css';
 
-const Controls=({ onHit, onStand, onReset,buttonState,balance, betEvent,gameState })=>{
+const Controls=({ onStart,onHit, onStand, onReset,buttonState,balance, betEvent,gameState })=>{
   const [amount, setAmount] = useState(10);
   const [inputStyle, setInputStyle] = useState(styles.input);
 
@@ -33,26 +33,33 @@ const Controls=({ onHit, onStand, onReset,buttonState,balance, betEvent,gameStat
   }
 
   const getControls=()=>{
-    if(gameState==="bet" ){ 
-      return(<div className={styles.controlsContainer}>
+    if(gameState==="init" ){ 
+      return (
+      <div className={styles.controlsContainer}>
+          <button onClick={onStart}  className={`${styles.button} ${styles.playButton}`}>Play</button>
+        </div>
+      )
+    }else if(gameState==="bet" ){ 
+      return (
+      <div className={styles.controlsContainer}>
           <div className={styles.betContainer}>
             <h4>Amount:</h4>
             <input autoFocus type="number" step="0.01"  min="0.01" max={balance} value={amount} onChange={amountChange} className={inputStyle} />
           </div>
-          <button onClick={() => onBetClick() } disabled={amount > balance || amount < 0.01} className={styles.button}>Bet</button>
-        </div>)
-
-    }else{return (
-      <div className={styles.controlsContainer}>
-          <button   className={styles.button} onClick={onHit} disabled={buttonState.hitDisabled} >Hit</button>
-          <button   className={styles.button} onClick={onStand} disabled={buttonState.standDisabled}>Stand</button>
-          <button   className={styles.button} onClick={onReset} disabled={buttonState.resetDisabled}>Reset</button>
+          <button onClick={() => onBetClick() } disabled={amount > balance || amount < 0.01} className={`${styles.button} ${styles.betButton}`}>Bet</button>
         </div>
-    )
-
+      )
+    }else{
+      return (
+      <div className={styles.controlsContainer}>
+          <button   className={`${styles.button} ${styles.hitButton}`} onClick={onHit} disabled={buttonState.hitDisabled} >Hit</button>
+          <button   className={`${styles.button} ${styles.standButton}`} onClick={onStand} disabled={buttonState.standDisabled}>Stand</button>
+          <button   className={`${styles.button} ${styles.resetButton}`} onClick={onReset} disabled={buttonState.resetDisabled}>Reset</button>
+      </div>
+      )
     }
   }
-  
+
     return (
         <>{getControls()}</>
     );

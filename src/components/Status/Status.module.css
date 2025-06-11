@@ -3,13 +3,13 @@
     justify-content: center;
   }
   
-  .status {
+  .status {    
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0.5em 0.5em 0.5em 1em;
-    padding: 1em;
-    width: 80%;
+    margin: 0.5rem 0.5rem 0.5rem 1rem;
+    padding: 1rem;
+    width: 300px;
     background: black;
     border: 5px solid white;
     border-radius: 15px;
@@ -20,9 +20,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0.5em 1em 0.5em 0.5em;
-    padding: 1em;
-    width: 30%;
+    margin: 0.5rem 1rem 0.5rem 0.5rem;
+    padding: 1rem;
+    width: 150px;
     background: black;
     border: 5px solid white;
     border-radius: 15px;
@@ -30,7 +30,7 @@
   }
   
   .value {
-    color: white;
+    color: rgb(255, 255, 255);
     text-align: center;
     font-size: 200%
   }
