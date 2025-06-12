@@ -25,6 +25,7 @@ function App() {
   const [message, setMessage] = useState('Start a New Game!');
 
   const [isDealerCardRevealed, setIsDealerCardRevealed] = useState(false);
+  const [isPlayerWins, setIsPlayerWins]=useState(false);
 
   const [balance, setBalance] = useState(100);
   const [bet, setBet] = useState(0);
@@ -49,6 +50,7 @@ function App() {
         setPlayerScore(calculateScore(playerNewCards));
       });
       setMessage("Hit or Stand?");
+      
     }
     
   }, [deckId,gameState]);
@@ -84,8 +86,9 @@ function App() {
     }
   }, [balance,gameState]);
 
-
-   const placeBet = (amount) => {
+  //Place bet
+  
+  const placeBet = (amount) => {
     setBet(amount);
     setBalance(Math.round((balance - amount) * 100) / 100);
     setGameState(GameState.PLAYER_TURN);
@@ -109,8 +112,8 @@ function App() {
           setBalance(100); 
         }
         setGameState(GameState.BET);
+        setIsPlayerWins(false);
       });
-      console.log(gameState);
   };
 
   //Draw card function: if the table is empty-draw 2 card, else draw 1 card
@@ -172,18 +175,21 @@ function App() {
 
   const checkWin = () => {
     if (playerScore > 21) {
-      setMessage("Dealer wins! (Player bust)");
+      setMessage("Dealer wins! (You bust)");
     } else if (dealerScore > 21) {
-      setMessage("Player wins! (Dealer bust)");
+      setMessage("You win! (Dealer bust)");
       setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
+      setIsPlayerWins(true);
     } else if (playerScore === 21 && dealerScore !== 21) {
-      setMessage("Blackjack! Player wins!");
+      setMessage("Blackjack! You win!");
       setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
+      setIsPlayerWins(true);
     } else if (dealerScore === 21 && playerScore !== 21) {
       setMessage("Blackjack! Dealer wins!");
     } else if (playerScore > dealerScore) {
-      setMessage("Player wins!");
+      setMessage("You win!");
       setBalance(Math.round((balance + (bet * 2)) * 100) / 100);
+      setIsPlayerWins(true);
     } else if (dealerScore > playerScore) {
       setMessage("Dealer wins!");
     } else {
@@ -202,7 +208,7 @@ function App() {
         score={dealerScore} 
         isRevealed={isDealerCardRevealed}
       />
-      <Status message={message} balance={balance}/> 
+      <Status message={message} balance={balance} isPlayerWins={isPlayerWins}/> 
       <Hand title={"Your Hand"}  cards={playerCards}   score={playerScore} />
       <Controls 
         onStart={newGame}

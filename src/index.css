@@ -5,6 +5,7 @@
 }
 
 body {
+  
   background: url('/public/blackjack-text.png'), url('/public/blackjack1.png');
   background-size: 600px,cover;       
   background-repeat: no-repeat; 
@@ -15,4 +16,5 @@ body {
   justify-content:center;
   font-family: 'Cinzel', sans-serif;    
 }
+
 
