@@ -1,7 +1,5 @@
 import styles from './Status.module.css';
 
-
-
 const Status= (props) => {
     const {message,balance,isPlayerWins}=props;
   return (

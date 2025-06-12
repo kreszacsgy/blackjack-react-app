@@ -137,20 +137,24 @@
   
 @media screen and (max-width: 992px) {
   .betContainer {
-    width: 200px;    
+    width: 300px;    
   }
 }
 
 @media screen and (max-width: 600px) {
   .betContainer {
-    width: 150px;        
+    width: 250px;        
   }
   .betContainer h4 {
     font-size: 75%;        
   }
   .betContainer input {
-    font-size: 125%;        
+    font-size: 1rem;        
   }
+
+  .sliderBox {
+  width: 150px;  
+}
 }
   
   

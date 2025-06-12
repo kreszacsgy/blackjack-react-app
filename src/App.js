@@ -38,6 +38,8 @@ function App() {
 
   const [gameState, setGameState] = useState(GameState.INIT);
 
+  // When deck is ready and it's the player's turn, draw initial cards
+
   useEffect(() => {
     if (deckId && gameState === GameState.PLAYER_TURN) {
       drawCard([]).then((dealerNewCards) => {
@@ -49,11 +51,11 @@ function App() {
         setPlayerCards(playerNewCards);
         setPlayerScore(calculateScore(playerNewCards));
       });
-      setMessage("Hit or Stand?");
-      
-    }
-    
+      setMessage("Hit or Stand?");      
+    }    
   }, [deckId,gameState]);
+
+  // Automatically check for win if player score reaches 21
 
   useEffect(() => {
     if (playerScore >= 21 && gameState === GameState.PLAYER_TURN ) {
@@ -62,6 +64,8 @@ function App() {
       setButtonState({ hitDisabled: true, standDisabled: true, resetDisabled: false });      
     }
   }, [playerScore]);
+
+  // Dealer's logic: if score < 17, draw more cards
 
    useEffect(() => {
     if (gameState === GameState.DEALER_TURN){ 
@@ -79,6 +83,8 @@ function App() {
     } };
   }, [dealerScore,gameState]);
 
+  // Reset if player runs out of money
+
   useEffect(() => {
     if (balance <= 0 && gameState===GameState.GAME_OVER) {
       setGameState(GameState.INIT);
@@ -86,8 +92,8 @@ function App() {
     }
   }, [balance,gameState]);
 
-  //Place bet
-  
+  // Place bet and subtract from balance
+
   const placeBet = (amount) => {
     setBet(amount);
     setBalance(Math.round((balance - amount) * 100) / 100);
@@ -95,7 +101,7 @@ function App() {
     setButtonState({ hitDisabled: false, standDisabled: false, resetDisabled: true });
   }
 
-//Starting New Game: shuffle cards and get deck id
+   // Start a new game: get a new shuffled deck
 
   const newGame=()=>{
     fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
@@ -108,7 +114,7 @@ function App() {
         setPlayerScore(0);
         setMessage('Place your bet!');
         setIsDealerCardRevealed(false);
-        if (balance <= 0) {
+        if (balance <= 0) {// Refill balance if empty
           setBalance(100); 
         }
         setGameState(GameState.BET);
@@ -116,7 +122,7 @@ function App() {
       });
   };
 
-  //Draw card function: if the table is empty-draw 2 card, else draw 1 card
+  // Draw cards from the deck. If no cards yet, draw 2; otherwise, 1.
 
   const drawCard=(cards)=>{    
     const count = cards.length === 0 ? 2 : 1;
@@ -151,7 +157,7 @@ function App() {
   };
 
 
-  //Player hits
+  //Player hits: draw one more card
 
   const hitPlayer = () => {
     drawCard(playerCards).then((newCards) => {
@@ -161,7 +167,7 @@ function App() {
     });    
   };
 
-  //Player stands
+  //Player stands: dealer's turn
 
   const stand=()=>{    
     setGameState(GameState.DEALER_TURN);
@@ -197,8 +203,6 @@ function App() {
       setBalance(Math.round((balance + (bet * 1)) * 100) / 100);
     }    
   };
-  
-
 
   return (
     <>         

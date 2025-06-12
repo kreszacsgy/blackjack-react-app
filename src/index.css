@@ -6,8 +6,8 @@
 
 body {
   
-  background: url('/public/blackjack-text.png'), url('/public/blackjack1.png');
-  background-size: 600px,cover;       
+  background: url('/public/blackjack-text.png'), url('/public/blackjack.png');
+  background-size: 100vmin,cover;       
   background-repeat: no-repeat; 
   background-position: 50% 30%, center; 
   height:100vh;
@@ -17,4 +17,9 @@ body {
   font-family: 'Cinzel', sans-serif;    
 }
 
+@media screen and (max-width: 600px) {
+  body{
+    background-size: 120vmin,cover;
+  } 
+}
 
