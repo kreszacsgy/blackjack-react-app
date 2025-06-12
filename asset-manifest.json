@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/blackjack-react-app/static/css/main.289d6a29.css",
+    "main.js": "/blackjack-react-app/static/js/main.dc38f79a.js",
+    "static/media/blackjack.png": "/blackjack-react-app/static/media/blackjack.aac6efaf058940bfbab7.png",
+    "static/media/blackjack-text.png": "/blackjack-react-app/static/media/blackjack-text.73e589b3cff6e50dd538.png",
+    "index.html": "/blackjack-react-app/index.html",
+    "main.289d6a29.css.map": "/blackjack-react-app/static/css/main.289d6a29.css.map",
+    "main.dc38f79a.js.map": "/blackjack-react-app/static/js/main.dc38f79a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.289d6a29.css",
+    "static/js/main.dc38f79a.js"
+  ]
+}
