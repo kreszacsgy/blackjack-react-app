@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+# Blackjack React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A polished **Blackjack game** built with **React**, designed as a portfolio project to demonstrate modern front-end development skills including component-based architecture, state management with hooks, CSS animations, and API integration.
 
-## Available Scripts
+## Demo
 
-In the project directory, you can run:
+https://kreszacsgy.github.io/blackjack-react-app/
 
-### `npm start`
+## Implemented functions and technologies
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    -  **Fully playable Blackjack** experience (excluding split and double down)
+    -  **Dealer AI** follows standard Blackjack rules (stands at 17+)
+    -  **Betting system** with balance management
+    -  **Card animations** including realistic flip effects
+    -  **Responsive design** for mobile and desktop
+    -  Uses the [Deck of Cards API](https://deckofcardsapi.com/) for real card draws (single deck)
 
-### `npm test`
+### Technologies Used
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Technology       | Purpose                               |
+|------------------|----------------------------------------|
+| **React**        | UI library with functional components  |
+| **React Hooks**  | State and effect management (`useState`, `useEffect`) |
+| **CSS Modules**  | Scoped, modular, and maintainable CSS  |
+| **Fetch API**    | Communicating with external APIs       |
+| **Deck of Cards API** | Real-time card drawing          |
 
-### `npm run build`
+### Project Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+src/
+├── components/
+│   ├── Controls/       # Betting and game control buttons
+│   │   ├── Controls.jsx
+│   │   └── Controls.module.css
+│   ├── Hand/           # Card rendering and flip animation
+│   │   ├── Hand.jsx
+│   │   └── Hand.module.css
+│   └── Status/         # Player balance and game messages
+│       ├── Status.jsx
+│       └── Status.module.css
+├── App.css             # Global styles
+├── App.js              # Main game logic and layout
+├── index.js            # Entry point of the app
+└── index.css           # Basic styling
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Purpose
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This project was created to:
 
-### `npm run eject`
+- Showcase a **modular component-based UI**
+- Demonstrate **interactive game logic** in React
+- Apply **clean, scalable styling** with CSS Modules
+- Integrate with external APIs and manage data
+- Build a **responsive, animated user interface**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## External Libraries
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Fonts**: [Google Fonts](https://fonts.google.com/)
+- **Images**: Created with [Leonardo.AI](https://app.leonardo.ai/image-generation)
+  
+## 🔗 Links
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://kreszacsgy.github.io/)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gy%C3%B6ngyi-kresz%C3%A1cs-a144ba258/)
