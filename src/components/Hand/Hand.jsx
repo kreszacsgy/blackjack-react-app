@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './Hand.module.css';
 
 const Hand = ({title,cards,score,isRevealed = true }) => {

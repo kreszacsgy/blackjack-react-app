@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './Status.module.css';
 
 const Status= (props) => {
